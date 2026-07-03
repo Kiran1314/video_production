@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #f4f7f6;
+  --bg-dark: #0f0f11;
+  --accent: #2563eb;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: #333;
+}
+
+/* --- New Animated Background --- */
+@layer utilities {
+  .animated-bg {
+    background-image: linear-gradient(-45deg, #066e4a, #0e0f3a, #0a0a0a, #10114a);
+    background-size: 400% 400%;
+    animation: gradientPan 15s ease infinite;
+  }
+}
+
+@keyframes gradientPan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
