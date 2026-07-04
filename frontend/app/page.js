@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRef } from "react";
 
 // Helper to extract YouTube ID
 function getYouTubeID(url) {
@@ -32,7 +33,7 @@ function getYouTubeID(url) {
     }
 }
 
-
+const infoTimer = useRef(null);
 
 export default function ClientGallery() {
   const [videos, setVideos] = useState([]);
@@ -120,6 +121,25 @@ export default function ClientGallery() {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
+useEffect(() => {
+  if (!activeVideo) return;
+
+  setShowInfo(true);
+
+  if (infoTimer.current) {
+    clearTimeout(infoTimer.current);
+  }
+
+  infoTimer.current = setTimeout(() => {
+    setShowInfo(false);
+  }, 8000);
+
+  return () => {
+    if (infoTimer.current) {
+      clearTimeout(infoTimer.current);
+    }
+  };
+}, [activeVideo]);
 
   const activeVideo =
   modalIndex !== null && filteredVideos[modalIndex]
@@ -277,15 +297,24 @@ const nextVideo = (e) => {
 
       {/* Top Controls */}
       <div className="absolute top-6 right-6 flex gap-5 z-[10000]">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowInfo(!showInfo);
-          }}
-          className="text-white text-2xl hover:text-blue-400 transition"
-        >
-          ℹ️
-        </button>
+             <button
+              onClick={(e) => {
+                  e.stopPropagation();
+
+                  setShowInfo(true);
+
+                  if (infoTimer.current) {
+                    clearTimeout(infoTimer.current);
+                  }
+
+                  infoTimer.current = setTimeout(() => {
+                    setShowInfo(false);
+                  }, 8000);
+                }}
+              className="text-white text-2xl hover:text-blue-400 transition"
+            >
+              ℹ️
+            </button>
 
         <button
           onClick={() => setModalIndex(null)}
@@ -327,23 +356,37 @@ const nextVideo = (e) => {
 
         {/* Description */}
         <AnimatePresence>
-          {showInfo && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="absolute bottom-4 right-4 z-[10001] bg-gray-900/90 backdrop-blur-md p-5 rounded-xl border border-gray-700 max-w-sm"
-            >
-              <h2 className="text-xl font-bold mb-2">
-                {activeVideo.title}
-              </h2>
+  {showInfo && (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 40 }}
+      transition={{ duration: 0.35 }}
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-[10001]
+        bg-gradient-to-t
+        from-black/95
+        via-black/70
+        to-transparent
+        px-8
+        py-8
+        rounded-b-xl
+      "
+    >
+      <h2 className="text-3xl font-bold mb-3">
+        {activeVideo.title}
+      </h2>
 
-              <p className="text-gray-300 text-sm">
-                {activeVideo.description}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <p className="text-gray-300 leading-7 max-w-4xl">
+        {activeVideo.description}
+      </p>
+    </motion.div>
+  )}
+</AnimatePresence>
 
         {/* Player */}
 
