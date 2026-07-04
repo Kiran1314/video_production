@@ -7,11 +7,42 @@ import toast from 'react-hot-toast';
 import { FiLogOut, FiDownload } from 'react-icons/fi';
 
 // Helper to extract YouTube ID
-const getYouTubeID = (url) => {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-};
+function getYouTubeID(url) {
+  if (!url) return null;
+
+  try {
+    const u = new URL(url);
+
+    if (u.hostname === "youtu.be") {
+      return u.pathname.substring(1);
+    }
+
+    if (
+      u.hostname.includes("youtube.com") ||
+      u.hostname.includes("youtube-nocookie.com")
+    ) {
+      if (u.pathname === "/watch") {
+        return u.searchParams.get("v");
+      }
+
+      if (u.pathname.startsWith("/embed/")) {
+        return u.pathname.split("/")[2];
+      }
+
+      if (u.pathname.startsWith("/shorts/")) {
+        return u.pathname.split("/")[2];
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function isYouTube(url) {
+  return !!getYouTubeID(url);
+}
 
 export default function AdminDashboard() {
   const [videos, setVideos] = useState([]);
@@ -355,7 +386,7 @@ export default function AdminDashboard() {
                         <div className="w-28 h-16 md:w-32 md:h-20 bg-black rounded overflow-hidden relative cursor-pointer group" onClick={() => setPreview(vid)}>
                           {isYouTube ? (
                             <>
-                              <img src={`https://img.youtube.com/vi/${ytID}/mqdefault.jpg`} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition" alt="YT Thumbnail"/>
+                              <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition" alt="YT Thumbnail"/>
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="w-6 h-6 md:w-8 md:h-8 bg-red-600 rounded-full flex items-center justify-center text-white text-xs pl-0.5 opacity-90">▶</div>
                               </div>
@@ -536,19 +567,37 @@ export default function AdminDashboard() {
                 className="w-full max-w-6xl flex justify-center items-center relative z-40 h-[70vh] md:h-[80vh]" 
                 onClick={e => e.stopPropagation()}
               >
-                {preview.videoUrl.includes('youtube.com') || preview.videoUrl.includes('youtu.be') ? (
-                  <iframe 
-                    src={`https://www.youtube.com/embed/${getYouTubeID(preview.videoUrl)}?autoplay=1`}
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    className="w-full max-w-5xl aspect-video max-h-full rounded-lg shadow-2xl bg-black"
-                  />
-                ) : (
-                  <video 
-                    src={`http://localhost:5000${preview.videoUrl}`} 
-                    controls autoPlay playsInline
-                    className="w-full h-full object-contain rounded-lg shadow-2xl bg-black" 
-                  />
-                )}
+               {(() => {
+    const ytID = getYouTubeID(preview.videoUrl);
+
+    if (ytID) {
+        return (
+            <iframe
+                key={ytID}
+                className="w-full h-full rounded-xl bg-black"
+                src={`https://www.youtube-nocookie.com/embed/${ytID}?autoplay=1&playsinline=1&rel=0&modestbranding=1`}
+                title={preview.title}
+                loading="lazy"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+            />
+        );
+    }
+
+    return (
+        <video
+            key={preview.videoUrl}
+            src={preview.videoUrl}
+            controls
+            autoPlay
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-contain rounded-xl bg-black"
+        />
+    );
+})()}
               </div>
             </motion.div>
           )}
