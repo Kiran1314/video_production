@@ -4,16 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Helper to extract YouTube ID
 function getYouTubeID(url) {
-  const isYT =
-    video.videoUrl.includes("youtube.com") ||
-    video.videoUrl.includes("youtu.be");
-
-const src = isYT
-    ? null
-    : video.videoUrl.startsWith("http")
-    ? video.videoUrl
-    : video.videoUrl;
-
+  
     try {
         const u = new URL(url);
 
@@ -64,6 +55,13 @@ export default function ClientGallery() {
     fetchPublicVideos();
   }, []);
 
+  const filteredVideos = activeCategory === 'All' ? videos : videos.filter(v => v.category === activeCategory);
+  const indexOfLastVideo = currentPage * videosPerPage;
+  const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
+  const currentVideos = filteredVideos.slice(indexOfFirstVideo, indexOfLastVideo);
+
+
+
   useEffect(() => {
 
     const handleKey = (e) => {
@@ -104,10 +102,7 @@ export default function ClientGallery() {
 
 }, [modalIndex, filteredVideos]);
 
-  const filteredVideos = activeCategory === 'All' ? videos : videos.filter(v => v.category === activeCategory);
-  const indexOfLastVideo = currentPage * videosPerPage;
-  const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
-  const currentVideos = filteredVideos.slice(indexOfFirstVideo, indexOfLastVideo);
+  
   const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
 
   const openModal = (video) => {
@@ -133,7 +128,7 @@ export default function ClientGallery() {
 
       
       {/* Fully Responsive Orientation-Aware Modal */}
-      <div className="min-h-screen animated-bg text-white px-4 py-8 md:px-8">
+   
     <header className="max-w-[96%] mx-auto mb-4" style={{ fontFamily: "'Work Sans', sans-serif" }}>
   
   {/* Flex container to hold text on left and logo on right */}
@@ -178,14 +173,23 @@ export default function ClientGallery() {
     ))}
   </div>
 </header>
+ 
 
       <motion.main 
         variants={containerVariants} initial="hidden" animate="show" key={activeCategory + currentPage}
         className="max-w-[96%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10"
       >
         {currentVideos.map((video) => {
-          const isYouTube = video.videoUrl.includes('youtube.com') || video.videoUrl.includes('youtu.be');
-          const ytID = isYouTube ? getYouTubeID(video.videoUrl) : null;
+          const isYouTube =
+        video.videoUrl.includes("youtube.com") ||
+        video.videoUrl.includes("youtu.be");
+
+    const ytID = isYouTube
+        ? getYouTubeID(video.videoUrl)
+        : null;
+
+   
+
           const prevVideo = (e) => {
             e.stopPropagation();
 
@@ -226,26 +230,26 @@ export default function ClientGallery() {
                   <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
                 ) : (
                  <video
-                          src={src}
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                          className="w-full h-full object-cover opacity-85
-                                    group-hover:opacity-100
-                                    transition duration-500
-                                    group-hover:scale-105"
-                          onMouseEnter={(e) => {
-                              e.currentTarget.play().catch(() => {});
-                          }}
-                          onMouseLeave={(e) => {
-                              e.currentTarget.pause();
-                              e.currentTarget.currentTime = 0;
-                          }}
-                      />
+                    src={video.videoUrl}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover
+                              opacity-85
+                              group-hover:opacity-100
+                              transition-all duration-500
+                              group-hover:scale-105"
+                    onMouseEnter={(e) => {
+                        e.currentTarget.play().catch(() => {});
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.pause();
+                        e.currentTarget.currentTime = 0;
+                    }}
+                />
                 )}
-              </div>
-                    <button
+                <button
                         onClick={nextVideo}
                         className="absolute right-4 z-50 w-14 h-14 rounded-full
                                   bg-black/60 hover:bg-white hover:text-black
@@ -254,6 +258,8 @@ export default function ClientGallery() {
                     >
                         &#10095;
                     </button>
+              </div>
+                    
               <h3 className="font-semibold text-xl truncate px-1">{video.title}</h3>
             </motion.div>
           );
@@ -305,11 +311,12 @@ export default function ClientGallery() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+     
 
      
 
       {/* Responsive Pagination */}
+
       {totalPages > 1 && (
         <div className="flex justify-center mt-12 md:mt-16 gap-3 md:gap-4 pb-8">
           <button 
@@ -330,7 +337,7 @@ export default function ClientGallery() {
         </div>
       )}
 
-    </div>
+         </div>
 
 
 
