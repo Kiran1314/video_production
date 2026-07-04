@@ -396,8 +396,10 @@ export default function AdminDashboard() {
                               src={vid.videoUrl}
                               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300" 
                               muted loop playsInline
-                              onMouseEnter={(e) => e.target.play().catch(() => {})}
-                              onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                             onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.pause();
+                                    e.currentTarget.currentTime = 0; }}
                             />
                           )}
                         </div>
