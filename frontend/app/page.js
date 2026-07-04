@@ -216,15 +216,7 @@ export default function ClientGallery() {
             <motion.div key={video._id} variants={itemVariants} className="cursor-pointer group flex flex-col" onClick={() => openModal(video)}>
               
               <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/50">
-              <button
-                  onClick={prevVideo}
-                  className="absolute left-4 z-50 w-14 h-14 rounded-full
-                            bg-black/60 hover:bg-white hover:text-black
-                            flex items-center justify-center
-                            text-3xl transition-all"
-              >
-                  &#10094;
-              </button>
+              
 
                 {isYouTube ? (
                   <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
@@ -249,15 +241,7 @@ export default function ClientGallery() {
                     }}
                 />
                 )}
-                <button
-                        onClick={nextVideo}
-                        className="absolute right-4 z-50 w-14 h-14 rounded-full
-                                  bg-black/60 hover:bg-white hover:text-black
-                                  flex items-center justify-center
-                                  text-3xl transition-all"
-                    >
-                        &#10095;
-                    </button>
+               
               </div>
                     
               <h3 className="font-semibold text-xl truncate px-1">{video.title}</h3>
@@ -280,6 +264,7 @@ export default function ClientGallery() {
 
             {/* Video Player Container */}
             <div className="relative w-full max-w-5xl aspect-video flex items-center justify-center" onClick={e => e.stopPropagation()}>
+
               {/* Floating Description Card */}
               <AnimatePresence>
                 {showInfo && (
@@ -293,6 +278,15 @@ export default function ClientGallery() {
                 )}
               </AnimatePresence>
 
+              <button
+                  onClick={prevVideo}
+                  className="absolute left-4 z-50 w-14 h-14 rounded-full
+                            bg-black/60 hover:bg-white hover:text-black
+                            flex items-center justify-center
+                            text-3xl transition-all"
+              >
+                  &#10094;
+              </button>
               {/* Player */}
               {filteredVideos[modalIndex].videoUrl.includes('youtube.com') || filteredVideos[modalIndex].videoUrl.includes('youtu.be') ? (
                <iframe
@@ -307,6 +301,16 @@ export default function ClientGallery() {
               ) : (
                 <video src={filteredVideos[modalIndex].videoUrl} controls autoPlay className="w-full h-full object-contain" />
               )}
+
+               <button
+                        onClick={nextVideo}
+                        className="absolute right-4 z-50 w-14 h-14 rounded-full
+                                  bg-black/60 hover:bg-white hover:text-black
+                                  flex items-center justify-center
+                                  text-3xl transition-all"
+                    >
+                        &#10095;
+                    </button>
             </div>
           </motion.div>
         )}
