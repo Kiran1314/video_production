@@ -121,6 +121,11 @@ export default function ClientGallery() {
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
+  const activeVideo =
+  modalIndex !== null && filteredVideos[modalIndex]
+    ? filteredVideos[modalIndex]
+    : null;
+
   return (
     
     <div className="min-h-screen animated-bg text-white px-4 py-8 md:px-8">
@@ -251,71 +256,145 @@ export default function ClientGallery() {
       </motion.main>
 
       <AnimatePresence>
-        {modalIndex !== null && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
-            onClick={() => setModalIndex(null)}
-          >
-            {/* Modal Controls */}
-            <div className="absolute top-6 right-8 flex gap-6 z-50">
-              <button onClick={(e) => { e.stopPropagation(); setShowInfo(!showInfo); }} className="text-white text-2xl hover:text-blue-400">ℹ️Info</button>
-              <button className="text-white text-4xl hover:text-gray-400" onClick={() => setModalIndex(null)}>&times;</button>
-            </div>
+  {activeVideo && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
+      onClick={() => setModalIndex(null)}
+    >
 
-            {/* Video Player Container */}
-            <div className="relative w-full max-w-5xl aspect-video flex items-center justify-center" onClick={e => e.stopPropagation()}>
+      {/* Top Controls */}
+      <div className="absolute top-6 right-6 flex gap-5 z-[10000]">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowInfo(!showInfo);
+          }}
+          className="text-white text-2xl hover:text-blue-400 transition"
+        >
+          ℹ️
+        </button>
 
-              {/* Floating Description Card */}
-              <AnimatePresence>
-                {showInfo && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                    className="absolute bottom-4 right-4 z-50 bg-gray-900/90 backdrop-blur-md p-6 rounded-xl border border-gray-700 shadow-[0_0_25px_rgba(0,0,0,0.5)] max-w-xs"
-                  >
-                    <h2 className="text-xl font-bold mb-2">{filteredVideos[modalIndex].title}</h2>
-                    <p className="text-gray-300 text-sm">{filteredVideos[modalIndex].description}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+        <button
+          onClick={() => setModalIndex(null)}
+          className="text-white text-5xl leading-none hover:text-red-400 transition"
+        >
+          &times;
+        </button>
+      </div>
 
-              <button
-                  onClick={prevVideo}
-                  className="absolute left-4 z-50 w-14 h-14 rounded-full
-                            bg-black/60 hover:bg-white hover:text-black
-                            flex items-center justify-center
-                            text-3xl transition-all"
-              >
-                  &#10094;
-              </button>
-              {/* Player */}
-              {filteredVideos[modalIndex].videoUrl.includes('youtube.com') || filteredVideos[modalIndex].videoUrl.includes('youtu.be') ? (
-               <iframe
-                  className="w-full h-full rounded-lg"
-                  src={`https://www.youtube-nocookie.com/embed/${getYouTubeID(filteredVideos[modalIndex].videoUrl)}?autoplay=1&rel=0&modestbranding=1`}
-                  title={filteredVideos[modalIndex].title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-              />
-              ) : (
-                <video src={filteredVideos[modalIndex].videoUrl} controls autoPlay className="w-full h-full object-contain" />
-              )}
+      <div
+        className="relative w-full max-w-6xl aspect-video flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
 
-               <button
-                        onClick={nextVideo}
-                        className="absolute right-4 z-50 w-14 h-14 rounded-full
-                                  bg-black/60 hover:bg-white hover:text-black
-                                  flex items-center justify-center
-                                  text-3xl transition-all"
-                    >
-                        &#10095;
-                    </button>
-            </div>
-          </motion.div>
+        {/* Previous */}
+        <button
+          onClick={prevVideo}
+          className="
+            absolute
+            left-4
+            top-1/2
+            -translate-y-1/2
+            z-[10001]
+            w-14
+            h-14
+            rounded-full
+            bg-black/70
+            hover:bg-white
+            hover:text-black
+            text-3xl
+            flex
+            items-center
+            justify-center
+            transition
+          "
+        >
+          &#10094;
+        </button>
+
+        {/* Description */}
+        <AnimatePresence>
+          {showInfo && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="absolute bottom-4 right-4 z-[10001] bg-gray-900/90 backdrop-blur-md p-5 rounded-xl border border-gray-700 max-w-sm"
+            >
+              <h2 className="text-xl font-bold mb-2">
+                {activeVideo.title}
+              </h2>
+
+              <p className="text-gray-300 text-sm">
+                {activeVideo.description}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Player */}
+
+        {activeVideo.videoUrl.includes("youtube.com") ||
+        activeVideo.videoUrl.includes("youtu.be") ? (
+
+          <iframe
+            key={activeVideo._id}
+            className="w-full h-full rounded-xl"
+            src={`https://www.youtube-nocookie.com/embed/${getYouTubeID(
+              activeVideo.videoUrl
+            )}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+            title={activeVideo.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            frameBorder="0"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+
+        ) : (
+
+          <video
+            key={activeVideo._id}
+            src={activeVideo.videoUrl}
+            controls
+            autoPlay
+            playsInline
+            className="w-full h-full object-contain rounded-xl"
+          />
+
         )}
-      </AnimatePresence>
-     
+
+        {/* Next */}
+        <button
+          onClick={nextVideo}
+          className="
+            absolute
+            right-4
+            top-1/2
+            -translate-y-1/2
+            z-[10001]
+            w-14
+            h-14
+            rounded-full
+            bg-black/70
+            hover:bg-white
+            hover:text-black
+            text-3xl
+            flex
+            items-center
+            justify-center
+            transition
+          "
+        >
+          &#10095;
+        </button>
+
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
      
 
