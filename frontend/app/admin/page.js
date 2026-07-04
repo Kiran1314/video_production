@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/videos?limit=1000`);
+        const res = await fetch(`/api/videos?limit=1000`);
         const data = await res.json();
         const uniqueCats = [...new Set(data.videos.map(v => v.category))];
         setExistingCategories(uniqueCats);
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
   const fetchVideos = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/videos?page=${page}&search=${search}`);
+      const res = await fetch(`/api/videos?page=${page}&search=${search}`);
       const data = await res.json();
       setVideos(data.videos);
       setTotalPages(data.totalPages);
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/videos', {
+      const res = await fetch('/api/videos', {
         method: 'POST',
         body: formData
       });
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!confirm('Are you sure you want to delete this video?')) return;
     try {
-      await fetch(`http://localhost:5000/api/videos/${id}`, { method: 'DELETE' });
+      await fetch(`/api/videos/${id}`, { method: 'DELETE' });
       setSelectedVideos(prev => prev.filter(vidId => vidId !== id));
       toast.success('Video deleted successfully.');
       fetchVideos();
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
     if (!confirm(`Are you sure you want to delete ${selectedVideos.length} videos?`)) return;
     const loadingToast = toast.loading('Deleting selected videos...');
     try {
-      await fetch('http://localhost:5000/api/videos/bulk-delete', {
+      await fetch('/api/videos/bulk-delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: selectedVideos })
@@ -144,7 +144,7 @@ export default function AdminDashboard() {
     const loadingToast = toast.loading('Updating visibility...');
     
     try {
-      const res = await fetch(`http://localhost:5000/api/videos/${vid._id}`, {
+      const res = await fetch(`/api/videos/${vid._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPublic: newStatus }) 
@@ -177,7 +177,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     const loadingToast = toast.loading('Saving changes...');
     try {
-      await fetch(`http://localhost:5000/api/videos/${editingVideo._id}`, {
+      await fetch(`/api/videos/${editingVideo._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
@@ -205,7 +205,9 @@ export default function AdminDashboard() {
       Title: v.title,
       Category: v.category,
       Description: v.description,
-      Links: v.videoUrl.startsWith('http') ? v.videoUrl : `http://localhost:5000${v.videoUrl}`,
+      Links: v.videoUrl.startsWith('http')
+  ? v.videoUrl
+  : v.videoUrl,
       Date: v.createdAt
     }));
     
@@ -360,7 +362,7 @@ export default function AdminDashboard() {
                             </>
                           ) : (
                             <video 
-                              src={`http://localhost:5000${vid.videoUrl}`} 
+                              src={vid.videoUrl}
                               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300" 
                               muted loop playsInline
                               onMouseEnter={(e) => e.target.play().catch(() => {})}

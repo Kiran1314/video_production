@@ -22,7 +22,7 @@ export default function ClientGallery() {
 
   useEffect(() => {
     const fetchPublicVideos = async () => {
-      const res = await fetch(`http://localhost:5000/api/videos?limit=1000`);
+      const res = await fetch(`/api/videos?limit=1000`);
       const data = await res.json();
       const publicVideos = data.videos.filter(v => v.isPublic !== false);
       setVideos(publicVideos);
@@ -121,7 +121,7 @@ export default function ClientGallery() {
                 {isYouTube ? (
                   <img src={`https://img.youtube.com/vi/${ytID}/maxresdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
                 ) : (
-                  <video src={`http://localhost:5000${video.videoUrl}`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
+                  <video src={video.videoUrl} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
                 )}
               </div>
               <h3 className="font-semibold text-xl truncate px-1">{video.title}</h3>
@@ -161,7 +161,7 @@ export default function ClientGallery() {
               {filteredVideos[modalIndex].videoUrl.includes('youtube.com') || filteredVideos[modalIndex].videoUrl.includes('youtu.be') ? (
                 <iframe src={`https://www.youtube.com/embed/${getYouTubeID(filteredVideos[modalIndex].videoUrl)}?autoplay=1`} className="w-full h-full rounded-lg" allow="autoplay; fullscreen" />
               ) : (
-                <video src={`http://localhost:5000${filteredVideos[modalIndex].videoUrl}`} controls autoPlay className="w-full h-full object-contain" />
+                <video src={filteredVideos[modalIndex].videoUrl} controls autoPlay className="w-full h-full object-contain" />
               )}
             </div>
           </motion.div>
