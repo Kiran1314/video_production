@@ -86,8 +86,7 @@ export default function ClientGallery() {
 
   {/* Description - stays below the header block */}
   <p className="text-lg md:text-xl font-light text-gray-300 mb-8 max-w-2xl leading-relaxed">
-    Turning UAE business objectives into compelling visual stories. 
-    Elevating brands through cinematic production and industrial storytelling.
+   Transforming UAE business objectives into compelling visual stories.
   </p>
 
   {/* Categories */}
