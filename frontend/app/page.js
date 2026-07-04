@@ -3,34 +3,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Helper to extract YouTube ID
-function getYouTubeID(url) {
-  
-    try {
-        const u = new URL(url);
-
-        if (u.hostname === "youtu.be") {
-            return u.pathname.slice(1);
-        }
-
-        if (u.hostname.includes("youtube.com")) {
-
-            if (u.pathname === "/watch")
-                return u.searchParams.get("v");
-
-            if (u.pathname.startsWith("/embed/"))
-                return u.pathname.split("/")[2];
-
-            if (u.pathname.startsWith("/shorts/"))
-                return u.pathname.split("/")[2];
-        }
-
-        return null;
-
-    } catch {
-
-        return null;
-    }
-}
+const getYouTubeID = (url) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
 
 
 
@@ -45,7 +22,7 @@ export default function ClientGallery() {
 
   useEffect(() => {
     const fetchPublicVideos = async () => {
-      const res = await fetch(`/api/videos?limit=1000`);
+      const res = await fetch(`http://localhost:5000/api/videos?limit=1000`);
       const data = await res.json();
       const publicVideos = data.videos.filter(v => v.isPublic !== false);
       setVideos(publicVideos);
@@ -59,50 +36,6 @@ export default function ClientGallery() {
   const indexOfLastVideo = currentPage * videosPerPage;
   const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
   const currentVideos = filteredVideos.slice(indexOfFirstVideo, indexOfLastVideo);
-
-
-
-  useEffect(() => {
-
-    const handleKey = (e) => {
-
-        if (modalIndex === null) return;
-
-        if (e.key === "ArrowLeft") {
-
-            setModalIndex(prev =>
-                prev === 0
-                    ? filteredVideos.length - 1
-                    : prev - 1
-            );
-
-        }
-
-        if (e.key === "ArrowRight") {
-
-            setModalIndex(prev =>
-                prev === filteredVideos.length - 1
-                    ? 0
-                    : prev + 1
-            );
-
-        }
-
-        if (e.key === "Escape") {
-
-            setModalIndex(null);
-
-        }
-
-    };
-
-    window.addEventListener("keydown", handleKey);
-
-    return () => window.removeEventListener("keydown", handleKey);
-
-}, [modalIndex, filteredVideos]);
-
-  
   const totalPages = Math.ceil(filteredVideos.length / videosPerPage);
 
   const openModal = (video) => {
@@ -121,11 +54,6 @@ export default function ClientGallery() {
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
-  const activeVideo =
-  modalIndex !== null && filteredVideos[modalIndex]
-    ? filteredVideos[modalIndex]
-    : null;
-
   return (
     
     <div className="min-h-screen animated-bg text-white px-4 py-8 md:px-8">
@@ -133,11 +61,11 @@ export default function ClientGallery() {
 
       
       {/* Fully Responsive Orientation-Aware Modal */}
-   
-    <header className="max-w-[96%] mx-auto mb-4" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+      <div className="min-h-screen animated-bg text-white px-4 py-8 md:px-8">
+    <header className="max-w-[96%] mx-auto mb-12" style={{ fontFamily: "'Work Sans', sans-serif" }}>
   
   {/* Flex container to hold text on left and logo on right */}
-  <div className="flex justify-between items-center mb-1">
+  <div className="flex justify-between items-center mb-4">
     
     {/* Text area */}
     <div>
@@ -158,7 +86,8 @@ export default function ClientGallery() {
 
   {/* Description - stays below the header block */}
   <p className="text-lg md:text-xl font-light text-gray-300 mb-8 max-w-2xl leading-relaxed">
-   Transforming UAE business objectives into compelling visual stories.
+    Turning UAE business objectives into compelling visual stories. 
+    Elevating brands through cinematic production and industrial storytelling.
   </p>
 
   {/* Categories */}
@@ -178,77 +107,23 @@ export default function ClientGallery() {
     ))}
   </div>
 </header>
- 
 
       <motion.main 
         variants={containerVariants} initial="hidden" animate="show" key={activeCategory + currentPage}
         className="max-w-[96%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10"
       >
         {currentVideos.map((video) => {
-          const isYouTube =
-        video.videoUrl.includes("youtube.com") ||
-        video.videoUrl.includes("youtu.be");
-
-    const ytID = isYouTube
-        ? getYouTubeID(video.videoUrl)
-        : null;
-
-   
-
-          const prevVideo = (e) => {
-            e.stopPropagation();
-
-            setShowInfo(false);
-
-            setModalIndex((prev) =>
-              prev === 0 ? filteredVideos.length - 1 : prev - 1
-            );
-          };
-
-          const nextVideo = (e) => {
-            e.stopPropagation();
-
-            setShowInfo(false);
-
-            setModalIndex((prev) =>
-              prev === filteredVideos.length - 1 ? 0 : prev + 1
-            );
-          };
-
-
-
+          const isYouTube = video.videoUrl.includes('youtube.com') || video.videoUrl.includes('youtu.be');
+          const ytID = isYouTube ? getYouTubeID(video.videoUrl) : null;
           return (
             <motion.div key={video._id} variants={itemVariants} className="cursor-pointer group flex flex-col" onClick={() => openModal(video)}>
-              
               <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/50">
-              
-
                 {isYouTube ? (
-                  <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
+                  <img src={`https://img.youtube.com/vi/${ytID}/maxresdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
                 ) : (
-                 <video
-                    src={video.videoUrl}
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="w-full h-full object-cover
-                              opacity-85
-                              group-hover:opacity-100
-                              transition-all duration-500
-                              group-hover:scale-105"
-                    onMouseEnter={(e) => {
-                        e.currentTarget.play().catch(() => {});
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.pause();
-                        e.currentTarget.currentTime = 0;
-                    }}
-                />
+                  <video src={`http://localhost:5000${video.videoUrl}`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
                 )}
-               
               </div>
-                    
               <h3 className="font-semibold text-xl truncate px-1">{video.title}</h3>
             </motion.div>
           );
@@ -256,150 +131,47 @@ export default function ClientGallery() {
       </motion.main>
 
       <AnimatePresence>
-  {activeVideo && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4"
-      onClick={() => setModalIndex(null)}
-    >
+        {modalIndex !== null && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+            onClick={() => setModalIndex(null)}
+          >
+            {/* Modal Controls */}
+            <div className="absolute top-6 right-8 flex gap-6 z-50">
+              <button onClick={(e) => { e.stopPropagation(); setShowInfo(!showInfo); }} className="text-white text-2xl hover:text-blue-400">ℹ️Info</button>
+              <button className="text-white text-4xl hover:text-gray-400" onClick={() => setModalIndex(null)}>&times;</button>
+            </div>
 
-      {/* Top Controls */}
-      <div className="absolute top-6 right-6 flex gap-5 z-[10000]">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowInfo(!showInfo);
-          }}
-          className="text-white text-2xl hover:text-blue-400 transition"
-        >
-          ℹ️
-        </button>
+            {/* Video Player Container */}
+            <div className="relative w-full max-w-5xl aspect-video flex items-center justify-center" onClick={e => e.stopPropagation()}>
+              {/* Floating Description Card */}
+              <AnimatePresence>
+                {showInfo && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                    className="absolute bottom-4 right-4 z-50 bg-gray-900/90 backdrop-blur-md p-6 rounded-xl border border-gray-700 shadow-[0_0_25px_rgba(0,0,0,0.5)] max-w-xs"
+                  >
+                    <h2 className="text-xl font-bold mb-2">{filteredVideos[modalIndex].title}</h2>
+                    <p className="text-gray-300 text-sm">{filteredVideos[modalIndex].description}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-        <button
-          onClick={() => setModalIndex(null)}
-          className="text-white text-5xl leading-none hover:text-red-400 transition"
-        >
-          &times;
-        </button>
-      </div>
-
-      <div
-        className="relative w-full max-w-6xl aspect-video flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-
-        {/* Previous */}
-        <button
-          onClick={prevVideo}
-          className="
-            absolute
-            left-4
-            top-1/2
-            -translate-y-1/2
-            z-[10001]
-            w-14
-            h-14
-            rounded-full
-            bg-black/70
-            hover:bg-white
-            hover:text-black
-            text-3xl
-            flex
-            items-center
-            justify-center
-            transition
-          "
-        >
-          &#10094;
-        </button>
-
-        {/* Description */}
-        <AnimatePresence>
-          {showInfo && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="absolute bottom-4 right-4 z-[10001] bg-gray-900/90 backdrop-blur-md p-5 rounded-xl border border-gray-700 max-w-sm"
-            >
-              <h2 className="text-xl font-bold mb-2">
-                {activeVideo.title}
-              </h2>
-
-              <p className="text-gray-300 text-sm">
-                {activeVideo.description}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Player */}
-
-        {activeVideo.videoUrl.includes("youtube.com") ||
-        activeVideo.videoUrl.includes("youtu.be") ? (
-
-          <iframe
-            key={activeVideo._id}
-            className="w-full h-full rounded-xl"
-            src={`https://www.youtube-nocookie.com/embed/${getYouTubeID(
-              activeVideo.videoUrl
-            )}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
-            title={activeVideo.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            frameBorder="0"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-
-        ) : (
-
-          <video
-            key={activeVideo._id}
-            src={activeVideo.videoUrl}
-            controls
-            autoPlay
-            playsInline
-            className="w-full h-full object-contain rounded-xl"
-          />
-
+              {/* Player */}
+              {filteredVideos[modalIndex].videoUrl.includes('youtube.com') || filteredVideos[modalIndex].videoUrl.includes('youtu.be') ? (
+                <iframe src={`https://www.youtube.com/embed/${getYouTubeID(filteredVideos[modalIndex].videoUrl)}?autoplay=1`} className="w-full h-full rounded-lg" allow="autoplay; fullscreen" />
+              ) : (
+                <video src={`http://localhost:5000${filteredVideos[modalIndex].videoUrl}`} controls autoPlay className="w-full h-full object-contain" />
+              )}
+            </div>
+          </motion.div>
         )}
-
-        {/* Next */}
-        <button
-          onClick={nextVideo}
-          className="
-            absolute
-            right-4
-            top-1/2
-            -translate-y-1/2
-            z-[10001]
-            w-14
-            h-14
-            rounded-full
-            bg-black/70
-            hover:bg-white
-            hover:text-black
-            text-3xl
-            flex
-            items-center
-            justify-center
-            transition
-          "
-        >
-          &#10095;
-        </button>
-
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+      </AnimatePresence>
+    </div>
 
      
 
       {/* Responsive Pagination */}
-
       {totalPages > 1 && (
         <div className="flex justify-center mt-12 md:mt-16 gap-3 md:gap-4 pb-8">
           <button 
@@ -420,7 +192,7 @@ export default function ClientGallery() {
         </div>
       )}
 
-         </div>
+    </div>
 
 
 
