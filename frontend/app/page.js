@@ -4,6 +4,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Helper to extract YouTube ID
 function getYouTubeID(url) {
+  const isYT =
+    video.videoUrl.includes("youtube.com") ||
+    video.videoUrl.includes("youtu.be");
+
+const src = isYT
+    ? null
+    : video.videoUrl.startsWith("http")
+    ? video.videoUrl
+    : video.videoUrl;
+
     try {
         const u = new URL(url);
 
@@ -53,6 +63,46 @@ export default function ClientGallery() {
     };
     fetchPublicVideos();
   }, []);
+
+  useEffect(() => {
+
+    const handleKey = (e) => {
+
+        if (modalIndex === null) return;
+
+        if (e.key === "ArrowLeft") {
+
+            setModalIndex(prev =>
+                prev === 0
+                    ? filteredVideos.length - 1
+                    : prev - 1
+            );
+
+        }
+
+        if (e.key === "ArrowRight") {
+
+            setModalIndex(prev =>
+                prev === filteredVideos.length - 1
+                    ? 0
+                    : prev + 1
+            );
+
+        }
+
+        if (e.key === "Escape") {
+
+            setModalIndex(null);
+
+        }
+
+    };
+
+    window.addEventListener("keydown", handleKey);
+
+    return () => window.removeEventListener("keydown", handleKey);
+
+}, [modalIndex, filteredVideos]);
 
   const filteredVideos = activeCategory === 'All' ? videos : videos.filter(v => v.category === activeCategory);
   const indexOfLastVideo = currentPage * videosPerPage;
@@ -136,15 +186,74 @@ export default function ClientGallery() {
         {currentVideos.map((video) => {
           const isYouTube = video.videoUrl.includes('youtube.com') || video.videoUrl.includes('youtu.be');
           const ytID = isYouTube ? getYouTubeID(video.videoUrl) : null;
+          const prevVideo = (e) => {
+            e.stopPropagation();
+
+            setShowInfo(false);
+
+            setModalIndex((prev) =>
+              prev === 0 ? filteredVideos.length - 1 : prev - 1
+            );
+          };
+
+          const nextVideo = (e) => {
+            e.stopPropagation();
+
+            setShowInfo(false);
+
+            setModalIndex((prev) =>
+              prev === filteredVideos.length - 1 ? 0 : prev + 1
+            );
+          };
+
+
+
           return (
             <motion.div key={video._id} variants={itemVariants} className="cursor-pointer group flex flex-col" onClick={() => openModal(video)}>
+              
               <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/50">
+              <button
+                  onClick={prevVideo}
+                  className="absolute left-4 z-50 w-14 h-14 rounded-full
+                            bg-black/60 hover:bg-white hover:text-black
+                            flex items-center justify-center
+                            text-3xl transition-all"
+              >
+                  &#10094;
+              </button>
+
                 {isYouTube ? (
                   <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
                 ) : (
-                  <video src={video.videoUrl} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
+                 <video
+                          src={src}
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover opacity-85
+                                    group-hover:opacity-100
+                                    transition duration-500
+                                    group-hover:scale-105"
+                          onMouseEnter={(e) => {
+                              e.currentTarget.play().catch(() => {});
+                          }}
+                          onMouseLeave={(e) => {
+                              e.currentTarget.pause();
+                              e.currentTarget.currentTime = 0;
+                          }}
+                      />
                 )}
               </div>
+                    <button
+                        onClick={nextVideo}
+                        className="absolute right-4 z-50 w-14 h-14 rounded-full
+                                  bg-black/60 hover:bg-white hover:text-black
+                                  flex items-center justify-center
+                                  text-3xl transition-all"
+                    >
+                        &#10095;
+                    </button>
               <h3 className="font-semibold text-xl truncate px-1">{video.title}</h3>
             </motion.div>
           );
