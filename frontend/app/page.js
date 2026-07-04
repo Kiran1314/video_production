@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef } from "react";
+ 
 
 // Helper to extract YouTube ID
 function getYouTubeID(url) {
@@ -33,7 +33,7 @@ function getYouTubeID(url) {
     }
 }
 
-const infoTimer = useRef(null);
+
 
 export default function ClientGallery() {
   const [videos, setVideos] = useState([]);
@@ -43,6 +43,7 @@ export default function ClientGallery() {
   const videosPerPage = 6;
   const [modalIndex, setModalIndex] = useState(null);
   const [showInfo, setShowInfo] = useState(false); // Toggle for description card
+  const infoTimer = useRef(null);
 
   useEffect(() => {
     const fetchPublicVideos = async () => {
@@ -121,6 +122,12 @@ export default function ClientGallery() {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
+const activeVideo =
+  modalIndex !== null &&
+  filteredVideos[modalIndex]
+    ? filteredVideos[modalIndex]
+    : null;
+
 useEffect(() => {
   if (!activeVideo) return;
 
@@ -140,11 +147,6 @@ useEffect(() => {
     }
   };
 }, [activeVideo]);
-
-  const activeVideo =
-  modalIndex !== null && filteredVideos[modalIndex]
-    ? filteredVideos[modalIndex]
-    : null;
 
 const prevVideo = (e) => {
   e?.stopPropagation();
