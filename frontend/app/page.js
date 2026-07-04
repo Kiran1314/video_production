@@ -3,11 +3,33 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Helper to extract YouTube ID
-const getYouTubeID = (url) => {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
-};
+function getYouTubeID(url) {
+    try {
+        const u = new URL(url);
+
+        if (u.hostname === "youtu.be") {
+            return u.pathname.slice(1);
+        }
+
+        if (u.hostname.includes("youtube.com")) {
+
+            if (u.pathname === "/watch")
+                return u.searchParams.get("v");
+
+            if (u.pathname.startsWith("/embed/"))
+                return u.pathname.split("/")[2];
+
+            if (u.pathname.startsWith("/shorts/"))
+                return u.pathname.split("/")[2];
+        }
+
+        return null;
+
+    } catch {
+
+        return null;
+    }
+}
 
 
 
@@ -158,7 +180,15 @@ export default function ClientGallery() {
 
               {/* Player */}
               {filteredVideos[modalIndex].videoUrl.includes('youtube.com') || filteredVideos[modalIndex].videoUrl.includes('youtu.be') ? (
-                <iframe src={`https://www.youtube.com/embed/${getYouTubeID(filteredVideos[modalIndex].videoUrl)}?autoplay=1`} className="w-full h-full rounded-lg" allow="autoplay; fullscreen" />
+               <iframe
+                  className="w-full h-full rounded-lg"
+                  src={`https://www.youtube-nocookie.com/embed/${getYouTubeID(filteredVideos[modalIndex].videoUrl)}?autoplay=1&rel=0&modestbranding=1`}
+                  title={filteredVideos[modalIndex].title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+              />
               ) : (
                 <video src={filteredVideos[modalIndex].videoUrl} controls autoPlay className="w-full h-full object-contain" />
               )}
