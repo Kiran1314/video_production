@@ -62,10 +62,10 @@ export default function ClientGallery() {
       
       {/* Fully Responsive Orientation-Aware Modal */}
       <div className="min-h-screen animated-bg text-white px-4 py-8 md:px-8">
-    <header className="max-w-[96%] mx-auto mb-12" style={{ fontFamily: "'Work Sans', sans-serif" }}>
+    <header className="max-w-[96%] mx-auto mb-4" style={{ fontFamily: "'Work Sans', sans-serif" }}>
   
   {/* Flex container to hold text on left and logo on right */}
-  <div className="flex justify-between items-center mb-4">
+  <div className="flex justify-between items-center mb-1">
     
     {/* Text area */}
     <div>
