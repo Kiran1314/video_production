@@ -350,7 +350,7 @@ const nextVideo = (e) => {
         {activeVideo.videoUrl.includes("youtube.com") ||
         activeVideo.videoUrl.includes("youtu.be") ? (
 
-      /*    <iframe
+         <iframe
             key={activeVideo._id}
             className="w-full h-full rounded-xl"
             src={`https://www.youtube-nocookie.com/embed/${getYouTubeID(
@@ -361,18 +361,9 @@ const nextVideo = (e) => {
             allowFullScreen
             frameBorder="0"
             referrerPolicy="strict-origin-when-cross-origin"
-          /> */
+          />  
 
-          <iframe
-    key={activeVideo._id}
-    className="w-full h-full rounded-xl"
-    src={`https://www.youtube.com/embed/${getYouTubeID(
-        activeVideo.videoUrl
-    )}?autoplay=1&playsinline=1&rel=0`}
-    title={activeVideo.title}
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowFullScreen
-/>
+        
 
         ) : (
 
