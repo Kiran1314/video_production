@@ -140,7 +140,7 @@ export default function ClientGallery() {
             <motion.div key={video._id} variants={itemVariants} className="cursor-pointer group flex flex-col" onClick={() => openModal(video)}>
               <div className="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-3 shadow-lg shadow-black/50">
                 {isYouTube ? (
-                  <img src={`https://img.youtube.com/vi/${ytID}/maxresdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
+                  <img src={`https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" alt="Thumbnail" />
                 ) : (
                   <video src={video.videoUrl} className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition duration-500 transform group-hover:scale-105" muted loop playsInline onMouseEnter={(e) => e.target.play()} onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }} />
                 )}
