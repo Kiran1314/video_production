@@ -335,9 +335,9 @@ const nextVideo = (e) => {
       </div>
 
       <div
-    className="w-full max-w-6xl flex flex-col gap-5"
-    onClick={(e) => e.stopPropagation()}
->
+        className="relative w-full max-w-6xl aspect-video flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
 
         {/* Previous */}
         <button
@@ -365,39 +365,37 @@ const nextVideo = (e) => {
         </button>
 
         {/* Description */}
-     <AnimatePresence>
+        <AnimatePresence>
+  {showInfo && (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 40 }}
+      transition={{ duration: 0.35 }}
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-[10001]
+        bg-gradient-to-t
+        from-black/95
+        via-black/70
+        to-transparent
+        px-8
+        py-8
+        rounded-b-xl
+      "
+    >
+      <h2 className="text-3xl font-bold mb-3">
+        {activeVideo.title}
+      </h2>
 
-    {showInfo && (
-
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            transition={{ duration: 0.35 }}
-            className="
-                w-full
-                bg-black/85
-                backdrop-blur-md
-                rounded-xl
-                border
-                border-gray-700
-                px-6
-                py-5
-            "
-        >
-
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                {activeVideo.title}
-            </h2>
-
-            <p className="text-gray-300 leading-7">
-                {activeVideo.description}
-            </p>
-
-        </motion.div>
-
-    )}
-
+      <p className="text-gray-300 leading-7 max-w-4xl">
+        {activeVideo.description}
+      </p>
+    </motion.div>
+  )}
 </AnimatePresence>
 
         {/* Player */}
