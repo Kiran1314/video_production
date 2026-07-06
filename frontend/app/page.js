@@ -144,7 +144,7 @@ useEffect(() => {
 
   infoTimer.current = setTimeout(() => {
     setShowInfo(false);
-  }, 8000);
+  },4000);
 
   return () => {
     if (infoTimer.current) {
@@ -415,6 +415,7 @@ const nextVideo = (e) => {
             allowFullScreen
             frameBorder="0"
             referrerPolicy="strict-origin-when-cross-origin"
+            
           />  
 
         
