@@ -375,7 +375,7 @@ const nextVideo = (e) => {
       className="
         absolute
         bottom-0
-        top-10
+        top-80
         left-0
         right-0
         z-[10001]
