@@ -51,8 +51,13 @@ export default function ClientGallery() {
       const data = await res.json();
       const publicVideos = data.videos.filter(v => v.isPublic !== false);
       setVideos(publicVideos);
-      const uniqueCats = ['All', ...new Set(publicVideos.map(v => v.category))];
-      setCategories(uniqueCats);
+      const uniqueCats = [
+  "All",
+  ...[...new Set(publicVideos.map(v => v.category))]
+    .sort((a, b) => a.localeCompare(b))
+];
+
+setCategories(uniqueCats);
     };
     fetchPublicVideos();
   }, []);
