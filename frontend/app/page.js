@@ -365,40 +365,31 @@ const nextVideo = (e) => {
         </button>
 
         {/* Description */}
-     <AnimatePresence>
+       <AnimatePresence>
+        {showInfo && (
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.35 }}
+                className="
+                    bg-black/85
+                    backdrop-blur-md
+                    rounded-xl
+                    border border-gray-700
+                    p-6
+                "
+            >
+                <h2 className="text-3xl font-bold mb-3">
+                    {activeVideo.title}
+                </h2>
 
-    {showInfo && (
-
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            transition={{ duration: 0.35 }}
-            className="
-                w-full
-                bg-black/85
-                backdrop-blur-md
-                rounded-xl
-                border
-                border-gray-700
-                px-6
-                py-5
-            "
-        >
-
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                {activeVideo.title}
-            </h2>
-
-            <p className="text-gray-300 leading-7">
-                {activeVideo.description}
-            </p>
-
-        </motion.div>
-
-    )}
-
-</AnimatePresence>
+                <p className="text-gray-300 leading-7">
+                    {activeVideo.description}
+                </p>
+            </motion.div>
+        )}
+    </AnimatePresence>
 
         {/* Player */}
 
