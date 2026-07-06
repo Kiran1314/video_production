@@ -375,7 +375,7 @@ const nextVideo = (e) => {
       className="
         absolute
         bottom-0
-        top-80
+        top-30
         left-0
         right-0
         z-[10001]
@@ -388,7 +388,7 @@ const nextVideo = (e) => {
         rounded-b-xl
       "
     >
-      <h2 className="text-3xl font-bold mb-3">
+      <h2 className="text-2xl font-bold mb-3">
         {activeVideo.title}
       </h2>
 
