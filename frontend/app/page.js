@@ -209,21 +209,24 @@ const nextVideo = (e) => {
   </p>
 
   {/* Categories */}
-  <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 hide-scrollbar">
-    {categories.map(cat => (
-      <button 
-        key={cat} 
-        onClick={() => { setActiveCategory(cat); setCurrentPage(1); }}
-        className={`px-6 py-2 text-sm uppercase tracking-wider rounded-md font-semibold transition-all duration-300 border border-transparent ${
-          activeCategory === cat 
-            ? 'bg-white text-black shadow-lg' 
-            : 'bg-transparent text-gray-400 hover:border-gray-600 hover:text-white'
-        }`}
-      >
-        {cat}
-      </button>
-    ))}
-  </div>
+<div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 hide-scrollbar">
+  {categories.map((cat) => (
+    <button
+      key={cat}
+      onClick={() => {
+        setActiveCategory(cat);
+        setCurrentPage(1);
+      }}
+      className={`px-6 py-2 text-sm uppercase tracking-wider rounded-md font-semibold whitespace-nowrap transition-all duration-300 border border-transparent ${
+        activeCategory === cat
+          ? "bg-white text-black shadow-lg"
+          : "bg-transparent text-gray-400 hover:border-gray-600 hover:text-white"
+      }`}
+    >
+      {cat}
+    </button>
+  ))}
+</div>
 </header>
  
 
