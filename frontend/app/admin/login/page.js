@@ -11,14 +11,24 @@ export default function AdminLogin() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const loadingToast = toast.loading('Bypassing authentication...');
-    
-    // Bypass logic: Skip API fetch entirely, set dummy token, and redirect
-    setTimeout(() => {
-      localStorage.setItem('token', 'bypass-token-12345');
-      toast.success('Successfully bypassed login!', { id: loadingToast });
-      router.push('/admin');
-    }, 600);
+    const loadingToast = toast.loading('Authenticating...');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        toast.success('Login successful!', { id: loadingToast });
+        router.push('/admin');
+      } else {
+        toast.error('Invalid credentials.', { id: loadingToast });
+      }
+    } catch (error) {
+      toast.error('Server error.', { id: loadingToast });
+    }
   };
 
   return (
@@ -40,20 +50,18 @@ export default function AdminLogin() {
         <h2 className="text-xl font-bold mb-6 text-center text-white">Admin Portal</h2>
         <input 
           type="text" placeholder="Username" required
-          autoComplete="username"
           className="w-full mb-4 p-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-400 rounded focus:outline-none focus:border-blue-500 transition"
           onChange={e => setUsername(e.target.value)}
         />
         
         <input 
           type="password" placeholder="Password" required
-          autoComplete="current-password"
           className="w-full mb-6 p-3 bg-gray-800 border border-gray-700 text-white placeholder-gray-400 rounded focus:outline-none focus:border-blue-500 transition"
           onChange={e => setPassword(e.target.value)}
         />
         
         <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded transition shadow-lg shadow-blue-500/20">
-          Login (Bypass)
+          Login
         </button>
       </motion.form>
     </div>

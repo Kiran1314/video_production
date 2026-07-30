@@ -49,12 +49,15 @@ export default function ClientGallery() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resMedia = await fetch('/api/videos?limit=1000');
+        // Automatically uses localhost:5000 during local dev, and relative /api in production
+        const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:5000/api' : '/api';
+
+        const resMedia = await fetch(`${baseUrl}/videos?limit=1000`);
         const dataMedia = await resMedia.json();
         const rawItems = dataMedia.items || dataMedia.videos || [];
         setMediaItems(rawItems.filter(v => v.isPublic !== false));
 
-        const resLang = await fetch('/api/languages');
+        const resLang = await fetch(`${baseUrl}/languages`);
         if (resLang.ok) {
           const langData = await resLang.json();
           setLanguagesDb(langData);
@@ -65,7 +68,6 @@ export default function ClientGallery() {
     };
     fetchData();
   }, []);
-
   // Filter Logic (Tier 1: Main Category)
   const filteredByMain = activeMainCategory === 'All' 
     ? mediaItems 
