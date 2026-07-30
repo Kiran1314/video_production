@@ -66,15 +66,12 @@ export default function AdminDashboard() {
   const fileInputRef = useRef(null);
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || 'bypass-token';
+    const token = localStorage.getItem('token');
     return { 'Authorization': `Bearer ${token}` };
   };
 
   useEffect(() => {
-    // AUTHENTICATION BYPASSED: Automatically set bypass-token if none exists instead of redirecting
-    if (!localStorage.getItem('token')) {
-      localStorage.setItem('token', 'bypass-token');
-    }
+    if (!localStorage.getItem('token')) router.push('/admin/login');
     fetchMedia();
     fetchCategories();
     fetchLanguages();
