@@ -2,7 +2,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
-  title: 'IBC Studio | Video Portfolio',
+  title: 'IBC Studio | Portfolio',
   description: 'Manage and view production media.',
 };
 
