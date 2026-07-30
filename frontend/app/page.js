@@ -49,12 +49,12 @@ export default function ClientGallery() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resMedia = await fetch('http://localhost:5000/api/videos?limit=1000');
+        const resMedia = await fetch('/api/videos?limit=1000');
         const dataMedia = await resMedia.json();
         const rawItems = dataMedia.items || dataMedia.videos || [];
         setMediaItems(rawItems.filter(v => v.isPublic !== false));
 
-        const resLang = await fetch('http://localhost:5000/api/languages');
+        const resLang = await fetch('/api/languages');
         if (resLang.ok) {
           const langData = await resLang.json();
           setLanguagesDb(langData);
