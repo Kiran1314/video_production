@@ -19,7 +19,7 @@ function getYouTubeID(url) {
   return null;
 }
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://portfolio.ibcstudio.com/api';
 
 export default function AdminDashboard() {
   const [mediaItems, setMediaItems] = useState([]);
